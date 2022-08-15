@@ -25,7 +25,7 @@ clock = pygame.time.Clock()
 
 atoms = [
     Atom(pygame.math.Vector2((10, 100)), pygame.math.Vector2((0.1, 0)), 1, 5),
-    Atom(pygame.math.Vector2((300, 100)), pygame.math.Vector2((0, 0)), 1, 5)
+    Atom(pygame.math.Vector2((300, 100)), pygame.math.Vector2((-0.05, 0)), 1, 5)
 ]
 
 while running:
@@ -42,12 +42,13 @@ while running:
             if a.pos.distance_to(a2.pos) <= a.radius + a2.radius:
                 print("collision")
                 o_vec = (a.pos - a2.pos).normalize()
+                a.pos.
 
                 t_vec = o_vec.copy()
                 new_y = t_vec.y * -1
                 t_vec.x = t_vec.y
                 t_vec.y = new_y
-                
+
 
                 a.vel = o_vec
                 a2.vel = t_vec
