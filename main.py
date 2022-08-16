@@ -220,7 +220,7 @@ def main():
                     x_y_spline = scipy.interpolate.make_interp_spline(x_axis, y_axis)
                     x_axis_new = np.linspace(min(x_axis), max(x_axis), 1000)
                     y_axis_new = x_y_spline(x_axis_new)
-                    plt.plot(x_axis, y_axis)
+                    plt.plot(x_axis_new , y_axis_new)
                     plt.show()
 
         screen.fill((0, 0, 0))
