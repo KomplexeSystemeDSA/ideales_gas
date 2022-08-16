@@ -2,10 +2,25 @@ import math
 
 import numpy as np
 import pygame
+import colorsys
 
-WIDTH = 1200
+WIDTH = 600
 HEIGHT = 600
 FPS = 60
+
+ATOM_MASS = 1
+ATOM_RADIUS = 5
+NUM_ATOMS = 250
+
+#region Helper functions
+def hsv2rgb(h: float, s: float, v: float):
+    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h, s, v))
+
+
+def clamp(x, lower, higher):
+    return max(lower, min(x, higher))
+#endregion
+
 
 class Atom:
     def __init__(self, pos: pygame.math.Vector2, vel: pygame.math.Vector2, mass: float, radius: float):
@@ -72,57 +87,71 @@ class Atom:
         return True
 
     def update(self, dt: float):
+        if self.pos.x <= self.radius:
+            self.pos.x = self.radius
+            self.vel.x *= -1
+        elif self.pos.x >= WIDTH - self.radius:
+            self.pos.x = WIDTH - self.radius
+            self.vel.x *= -1
+
+        if self.pos.y <= self.radius:
+            self.pos.y = self.radius
+            self.vel.y *= -1
+        elif self.pos.y >= HEIGHT - self.radius:
+            self.pos.y = HEIGHT - self.radius
+            self.vel.y *= -1
+
         self.pos += self.vel * dt
 
     def draw(self, screen: pygame.Surface):
-        pygame.draw.circle(screen, (255, 255, 255), self.pos, self.radius)
+        hsv = (clamp(self.vel.magnitude(), 0.0, 1.0), 1.0, 0.5)
+        rgb = hsv2rgb(*hsv)
+        pygame.draw.circle(screen, rgb, self.pos, self.radius)
 
-pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+def main():
+    pygame.init()
 
-running = True
-clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-"""atoms = [
-    Atom(pygame.math.Vector2((10, 500)), pygame.math.Vector2((0.2, 0)), 1, 5),
-    Atom(pygame.math.Vector2((500, 500)), pygame.math.Vector2((-0.1, 0)), 1, 5)
-]"""
-atoms = []
-ATOM_MASS = 1
-ATOM_RADIUS = 5
-for i in range(1000):
-    atoms.append(Atom(
-        pygame.math.Vector2((np.random.randint(ATOM_RADIUS, WIDTH - ATOM_RADIUS, dtype=int), np.random.randint(ATOM_RADIUS, HEIGHT - ATOM_RADIUS, dtype=int))),
-        pygame.math.Vector2(((np.random.rand() * 0.5) - 0.25, (np.random.rand() * 0.5) - 0.25)),
-        ATOM_MASS,
-        ATOM_RADIUS
-    ))
+    running = True
+    clock = pygame.time.Clock()
 
-while running:
-    dt = clock.tick(FPS)
+    atoms = []
+    for i in range(NUM_ATOMS):
+        atoms.append(Atom(
+            pygame.math.Vector2((np.random.randint(ATOM_RADIUS, WIDTH - ATOM_RADIUS, dtype=int),
+                                 np.random.randint(ATOM_RADIUS, HEIGHT - ATOM_RADIUS, dtype=int))),
+            pygame.math.Vector2(((np.random.rand() * 0.5) - 0.25, (np.random.rand() * 0.5) - 0.25)),
+            ATOM_MASS,
+            ATOM_RADIUS
+        ))
 
-    for evt in pygame.event.get():
-        if evt.type == pygame.QUIT:
-            running = False
+    while running:
+        dt = clock.tick(FPS)
 
-    screen.fill((0, 0, 0))
+        for evt in pygame.event.get():
+            if evt.type == pygame.QUIT:
+                running = False
 
-    for a in atoms:
+        screen.fill((0, 0, 0))
 
-        if a.pos.x <= a.radius or a.pos.x >= WIDTH - a.radius:
-            a.vel.x *= -1
-        if a.pos.y <= a.radius or a.pos.y >= HEIGHT - a.radius:
-            a.vel.y *= -1
+        for a in atoms:
+            black_list = []
+            for a2 in atoms:
+                if a == a2 or a2 in black_list:
+                    continue
+                if a.check_collision(a2):
+                    black_list.append(a2)
 
-        black_list = []
-        for a2 in atoms:
-            if a == a2 or a2 in black_list:
-                continue
-            if a.check_collision(a2):
-                black_list.append(a2)
+            a.update(dt)
+            a.draw(screen)
 
-        a.update(dt)
-        a.draw(screen)
+        sum_of_vels = sum([a.vel.magnitude() for a in atoms])
+        print(sum_of_vels)
 
-    pygame.display.flip()
+        pygame.display.flip()
+
+
+if __name__ == '__main__':
+    main()
