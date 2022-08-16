@@ -9,6 +9,7 @@ import time
 import scipy
 
 SHOW_PLOT = True
+PLOT_ROUNDING = 2
 
 FULLSCREEN = True
 WIDTH = 600
@@ -28,8 +29,8 @@ G_CONSTANT = 2.5
 
 GRAVITY = False
 
-USE_CHUNKED_COLLISIONS = True
-CHUNK_SIZE = 30
+USE_CHUNKED_COLLISIONS = False
+CHUNK_SIZE = 50
 
 
 # region Helper functions
@@ -178,7 +179,7 @@ def main():
         ))
 
     for i in range(NUM_ATOMS // 2, NUM_ATOMS):
-        inner_speed_factor = 2.0
+        inner_speed_factor = 4.0
         atoms.append(Atom(
             pygame.math.Vector2((np.random.randint(ATOM_RADIUS + WIDTH / 2, WIDTH - ATOM_RADIUS, dtype=int),
                                  np.random.randint(ATOM_RADIUS, HEIGHT - ATOM_RADIUS, dtype=int))),
@@ -194,10 +195,9 @@ def main():
         # region Calculate velocity distribution
         vels = [a.vel.magnitude() for a in atoms]
 
-        step = 2
         unit_vels = {}
         for v in vels:
-            unit_vel = round(v, step)
+            unit_vel = round(v, PLOT_ROUNDING)
             unit_vels[unit_vel] = unit_vels.get(unit_vel, 0) + 1
         # endregion
 
@@ -213,6 +213,8 @@ def main():
                     y_axis_new = x_y_spline(x_axis_new)
                     plt.plot(x_axis_new, y_axis_new)
                     plt.show()
+                    continue
+
             elif evt.type == pygame.KEYDOWN:
                 if evt.key == pygame.K_p:
                     od = collections.OrderedDict(sorted(unit_vels.items()))
@@ -222,6 +224,8 @@ def main():
                     y_axis_new = x_y_spline(x_axis_new)
                     plt.plot(x_axis_new , y_axis_new)
                     plt.show()
+                    clock.tick(FPS)
+                    dt = 1.0
 
         screen.fill((0, 0, 0))
 
@@ -251,7 +255,6 @@ def main():
             a.draw(screen, dt)
 
         pygame.display.flip()
-
 
 
 if __name__ == '__main__':
