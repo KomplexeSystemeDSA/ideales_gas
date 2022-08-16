@@ -15,6 +15,8 @@ ATOM_MASS = 1
 ATOM_RADIUS = 5
 NUM_ATOMS = 50
 
+SPEED_FACTOR = 1.0
+
 #region Helper functions
 def hsv2rgb(h: float, s: float, v: float):
     return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h, s, v))
@@ -132,13 +134,12 @@ def main():
     running = True
     clock = pygame.time.Clock()
 
-    speed_factor = 0.5
     atoms = []
     for i in range(NUM_ATOMS):
         atoms.append(Atom(
             pygame.math.Vector2((np.random.randint(ATOM_RADIUS, WIDTH - ATOM_RADIUS, dtype=int),
                                  np.random.randint(ATOM_RADIUS, HEIGHT - ATOM_RADIUS, dtype=int))),
-            pygame.math.Vector2(((np.random.rand() * speed_factor) - 0.5 * speed_factor, (np.random.rand() * speed_factor) - 0.5 * speed_factor)),
+            pygame.math.Vector2(((np.random.rand() * SPEED_FACTOR) - 0.5 * SPEED_FACTOR, (np.random.rand() * SPEED_FACTOR) - 0.5 * SPEED_FACTOR)),
             ATOM_MASS,
             ATOM_RADIUS
         ))
