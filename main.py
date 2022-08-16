@@ -132,12 +132,13 @@ def main():
     running = True
     clock = pygame.time.Clock()
 
+    speed_factor = 0.5
     atoms = []
     for i in range(NUM_ATOMS):
         atoms.append(Atom(
             pygame.math.Vector2((np.random.randint(ATOM_RADIUS, WIDTH - ATOM_RADIUS, dtype=int),
                                  np.random.randint(ATOM_RADIUS, HEIGHT - ATOM_RADIUS, dtype=int))),
-            pygame.math.Vector2(((np.random.rand() * 0.5) - 0.25, (np.random.rand() * 0.5) - 0.25)),
+            pygame.math.Vector2(((np.random.rand() * speed_factor) - 0.5 * speed_factor, (np.random.rand() * speed_factor) - 0.5 * speed_factor)),
             ATOM_MASS,
             ATOM_RADIUS
         ))
