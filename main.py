@@ -6,13 +6,14 @@ import colorsys
 import matplotlib.pyplot as plt
 import collections
 
+FULLSCREEN = True
 WIDTH = 600
 HEIGHT = 600
 FPS = 60
 
 ATOM_MASS = 1
 ATOM_RADIUS = 5
-NUM_ATOMS = 500
+NUM_ATOMS = 50
 
 #region Helper functions
 def hsv2rgb(h: float, s: float, v: float):
@@ -40,7 +41,12 @@ class Atom:
 
         distance_correction = (min_distance - distance_vec_mag) / 2.0
         d = distance_vec.copy()
-        correction_vector = d.normalize() * distance_correction
+
+        try:
+            correction_vector = d.normalize() * distance_correction
+        except ValueError:
+            correction_vector = pygame.math.Vector2()
+
         other.pos += correction_vector
         self.pos -= correction_vector
 
@@ -112,9 +118,16 @@ class Atom:
 
 
 def main():
+    global WIDTH, HEIGHT
+
     pygame.init()
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    if FULLSCREEN:
+        display_info = pygame.display.Info()
+        WIDTH = display_info.current_w
+        HEIGHT = display_info.current_h
+
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0x0)
 
     running = True
     clock = pygame.time.Clock()
