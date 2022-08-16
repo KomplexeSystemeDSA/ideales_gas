@@ -217,6 +217,9 @@ def main():
                 if evt.key == pygame.K_p:
                     od = collections.OrderedDict(sorted(unit_vels.items()))
                     x_axis, y_axis = zip(*od.items())
+                    x_y_spline = scipy.interpolate.make_interp_spline(x_axis, y_axis)
+                    x_axis_new = np.linspace(min(x_axis), max(x_axis), 1000)
+                    y_axis_new = x_y_spline(x_axis_new)
                     plt.plot(x_axis, y_axis)
                     plt.show()
 
