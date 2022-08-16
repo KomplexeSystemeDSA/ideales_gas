@@ -3,6 +3,8 @@ import math
 import numpy as np
 import pygame
 import colorsys
+import matplotlib.pyplot as plt
+import collections
 
 WIDTH = 600
 HEIGHT = 600
@@ -10,7 +12,7 @@ FPS = 60
 
 ATOM_MASS = 1
 ATOM_RADIUS = 5
-NUM_ATOMS = 250
+NUM_ATOMS = 500
 
 #region Helper functions
 def hsv2rgb(h: float, s: float, v: float):
@@ -130,9 +132,23 @@ def main():
     while running:
         dt = clock.tick(FPS)
 
+        #region Calculate velocity distribution
+        vels = [a.vel.magnitude() for a in atoms]
+
+        step = 2
+        unit_vels = {}
+        for v in vels:
+            unit_vel = round(v, step)
+            unit_vels[unit_vel] = unit_vels.get(unit_vel, 0) + 1
+        #endregion
+
         for evt in pygame.event.get():
             if evt.type == pygame.QUIT:
                 running = False
+                od = collections.OrderedDict(sorted(unit_vels.items()))
+                x_axis, y_axis = zip(*od.items())
+                plt.plot(x_axis, y_axis)
+                plt.show()
 
         screen.fill((0, 0, 0))
 
@@ -146,9 +162,6 @@ def main():
 
             a.update(dt)
             a.draw(screen)
-
-        sum_of_vels = sum([a.vel.magnitude() for a in atoms])
-        print(sum_of_vels)
 
         pygame.display.flip()
 
