@@ -5,17 +5,22 @@ import pygame
 import colorsys
 import matplotlib.pyplot as plt
 import collections
+import time
+
+PLOT = False
 
 FULLSCREEN = True
 WIDTH = 600
 HEIGHT = 600
 FPS = 60
 
-ATOM_MASS = 1
-ATOM_RADIUS = 5
-NUM_ATOMS = 50
+ATOM_MASS = 1.0
+ATOM_RADIUS = 50.0
+NUM_ATOMS = 3
 
-SPEED_FACTOR = 1.0
+SPEED_FACTOR = 2.0
+
+COLOR_FADE_DIVISOR = 1.0
 
 #region Helper functions
 def hsv2rgb(h: float, s: float, v: float):
@@ -114,7 +119,8 @@ class Atom:
         self.pos += self.vel * dt
 
     def draw(self, screen: pygame.Surface):
-        hsv = (clamp(self.vel.magnitude(), 0.0, 1.0), 1.0, 0.5)
+        ms = time.time() % COLOR_FADE_DIVISOR / COLOR_FADE_DIVISOR
+        hsv = (self.vel.magnitude() + ms) % 1.0, 1.0, 0.5
         rgb = hsv2rgb(*hsv)
         pygame.draw.circle(screen, rgb, self.pos, self.radius)
 
@@ -160,10 +166,11 @@ def main():
         for evt in pygame.event.get():
             if evt.type == pygame.QUIT:
                 running = False
-                od = collections.OrderedDict(sorted(unit_vels.items()))
-                x_axis, y_axis = zip(*od.items())
-                plt.plot(x_axis, y_axis)
-                plt.show()
+                if PLOT:
+                    od = collections.OrderedDict(sorted(unit_vels.items()))
+                    x_axis, y_axis = zip(*od.items())
+                    plt.plot(x_axis, y_axis)
+                    plt.show()
 
         screen.fill((0, 0, 0))
 
