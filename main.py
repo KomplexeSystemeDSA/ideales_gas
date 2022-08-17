@@ -9,7 +9,7 @@ import time
 import scipy
 
 SHOW_PLOT = True
-PLOT_ROUNDING = 2
+PLOT_ROUNDING = 1
 
 FULLSCREEN = True
 WIDTH = 600
@@ -18,7 +18,7 @@ FPS = 60
 
 ATOM_MASS = 1.0
 ATOM_RADIUS = 5
-NUM_ATOMS = 500
+NUM_ATOMS = 200
 
 SPEED_FACTOR = 0.25
 
@@ -162,6 +162,7 @@ def main():
         HEIGHT = display_info.current_h
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0x0)
+    pygame.display.set_caption("Ideales Gasmodell")
 
     running = True
     clock = pygame.time.Clock()
